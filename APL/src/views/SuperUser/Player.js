@@ -218,6 +218,7 @@ export default function SU_Player() {
     setExpandedPanel(isExpanded ? panel : false);
   };
   
+  
   function ShowPlayerImage(props) {
     // if (props.pid === 0)
     // return(
@@ -225,8 +226,9 @@ export default function SU_Player() {
     // )
     // else
     return(
-      <Avatar variant="square" src={`https://www.cricapi.com/playerpic/${props.pid}.JPG`} className={classes.medium} />
+      <Avatar variant="square" src={`https://www.cricapi.com/playerpic/${props.pid}.jpg`} className={classes.medium} />
     )
+  
   } 
   
   async function handleFilter(label) {

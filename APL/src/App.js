@@ -1,26 +1,23 @@
 import React, { useState, useMemo } from "react";
-import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+// import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { createBrowserHistory } from "history";
 import { UserContext } from "./UserContext";
+import Button from '@material-ui/core/Button';
 //import Admin from "layouts/Admin.js";
 import "assets/css/material-dashboard-react.css?v=1.9.0";
+
 // import { DesktopWindows } from "@material-ui/icons";
-import { CricDreamTabs, setTab }from "CustomComponents/CricDreamTabs"
-import SignIn from "views/Login/SignIn.js";
-import SignUp from "views/Login/SignUp.js";
-//import JoinGroup from "views/Group/JoinGroup.js"
-import ForgotPassword from "views/Login/ForgotPassword.js";
+import Player from "views/SuperUser/Player"
+import FileDownload from "views/APL/FileDownload"
+import FileUpload from "views/APL/FileUpload";
+import BinaryUpload from "views/APL/BinaryUpload";
+import BinaryDownload from "views/APL/BinaryDownload";
+import PlayerPicture from "views/SuperUser/PlayerPic"
+import TeamPicture from "views/SuperUser/TeamPic"
 
 const hist = createBrowserHistory();
 
-function checkJoinGroup(pathArray) {
-  let sts = false;
-  if ((pathArray[1].toLowerCase() === "joingroup") && (pathArray.length === 3) && (pathArray[2].length > 0)) {
-    localStorage.setItem("joinGroupCode", pathArray[2]);
-    sts = true;
-  }
-  return sts;
-}
 
 function initCdParams() {
   localStorage.setItem("joinGroupCode", "");
@@ -34,21 +31,60 @@ function initCdParams() {
   console.log(`ipos: ${ipos}   Tabpos ${localStorage.getItem("tabpos")}`)
 }
 
-function isUserLogged() {
-  //console.log(`User is ${localStorage.getItem("uid")}`)
-  if ((localStorage.getItem("uid") === "") || 
-      (localStorage.getItem("uid") === "0") ||
-      (localStorage.getItem("uid") === null))
-    return false;
-  else
-    return true;
-}
 
 function AppRouter() {
-
   const [user, setUser] = useState(null);
-
   const value = useMemo(() => ({ user, setUser }), [user, setUser]);
+
+  const [upDown, setupDown] = useState("DOWNLOADIMAGE");
+
+  function ShowButtons() {
+    console.log(upDown);
+    return (
+      <div align="center">
+        <Button
+          // type="submit"
+          size="small"
+          variant="contained"
+          color="primary"
+          disabled={upDown === "UPLOADBINARY"}
+          onClick={() => {setupDown("UPLOADBINARY")}}
+        >
+          Upload Binary
+        </Button>
+        <Button
+          //type="submit"
+          size="small"
+          variant="contained"
+          color="primary"
+          disabled={upDown === "DOWNLOADBINARY"}
+          onClick={() => {setupDown("DOWNLOADBINARY")}}
+        >
+          DownLoad Binary
+        </Button>
+        <Button
+          // type="submit"
+          size="small"
+          variant="contained"
+          color="primary"
+          disabled={upDown === "UPLOADIMAGE"}
+          onClick={() => {setupDown("UPLOADIMAGE")}}
+        >
+          Upload Image
+        </Button>
+        <Button
+          //type="submit"
+          size="small"
+          variant="contained"
+          color="primary"
+          disabled={upDown === "DOWNLOADIMAGE"}
+          onClick={() => {setupDown("DOWNLOADIMAGE")}}
+        >
+          DownLoad Image
+        </Button>
+      </div>
+    )
+  }
 
 
   function DispayTabs() {
@@ -71,33 +107,52 @@ function AppRouter() {
   //console.log("in before unload");
   // localStorage.clear();
   // console.log("clearing local storage");
-    initCdParams();
-    //console.log("GTP "+window.location.pathname.toLowerCase());
-    let mypath = window.location.pathname.split("/");
-    if (checkJoinGroup(mypath)) {
-      //console.log("join group found");
-      localStorage.setItem("tabpos", 105);
-      //history.push("/")
-    } 
+  initCdParams();
+  //console.log("GTP "+window.location.pathname.toLowerCase());
+  let mypath = window.location.pathname.split("/");
 
-  // return (
-    // <Router history={hist}> 
-  //     <UserContext.Provider value={value}>
-  //       {!user && <Redirect from="/" to="/signIn" />}
-        // <Route path="/joingroup" component={JoinGroup} />
-  //       <Route path="/admin" component={value ? Admin : SignIn} />
-  //       <Redirect from="/" to="/signIn" />
-  //     </UserContext.Provider>
-    // </Router>
-  // );
+  function DisplayOptions() {
+    switch (upDown) {
+      case "UPLOADBINARY": return <BinaryUpload />
+      case "UPLOADIMAGE" : return <FileUpload />
+      case "DOWNLOADBINARY": return <BinaryDownload />
+      case "DOWNLOADIMAGE" : return <FileDownload />
+      default: return null;
+    }
+  }
 
-return (
-      <Router history={hist}> 
+  function ShowHome() {
+    return (
+      <div>
+        <ShowButtons />
+        <DisplayOptions />
+      </div>
+    )
+  }
+
+  return (
+    <BrowserRouter history={hist}> 
       <UserContext.Provider value={value}>
+        <Route path="/uploadimage" component={FileUpload} />
+        <Route path="/downloadimage" component={FileDownload} />
+        <Route path="/uploadbinary" component={BinaryUpload} />
+        <Route path="/downloadbinary" component={BinaryDownload} />
+        <Route path="/playerpic/:playerPid" component={PlayerPicture} />
+        <Route path="/teampic/:teamName" component={TeamPicture} />
+        <Route path="/home" component={ShowHome} />
+        <Route exact path="/" component={ShowHome} />
+        {/* <Redirect exact from="/" to="/home" /> */}
       </UserContext.Provider>
-      <DispayTabs />
-      </Router>
+    </BrowserRouter>
   );
+
+// return (
+//       <Router history={hist}> 
+//       <UserContext.Provider value={value}>
+//       </UserContext.Provider>
+//       <DispayTabs />
+//       </Router>
+//   );
 
 }
 

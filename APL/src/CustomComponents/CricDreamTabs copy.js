@@ -18,7 +18,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu'; 
 import {red, blue, green} from '@material-ui/core/colors';
 import Divider from '@material-ui/core/Divider';
-import {cdRefresh, specialSetPos, upGradeRequired} from "views/functions.js"
+import {cdRefresh, specialSetPos, upGradeRequired, clearBackupData} from "views/functions.js"
 /// cd items import
 import Dash from "views/Dashboard/Dashboard"
 import Stats from "views/Statistics/Statistics"
@@ -117,6 +117,7 @@ export function CricDreamTabs() {
   const [grpAuth, setGrpAuth] = React.useState(true);
   const [grpAnchorEl, setGrpAnchorEl] = React.useState(null);
   const grpOpen = Boolean(grpAnchorEl);
+  const [arunGroup, setArunGroup] = React.useState(false);
   const [value, setValue] = React.useState(parseInt(localStorage.getItem("menuValue")));
   const [upgrade, setUpgrade] = React.useState(false);
   const [modalIsOpen,setIsOpen] = React.useState(true);
@@ -135,28 +136,6 @@ export function CricDreamTabs() {
 }, []);
 
 
-  async function getMyGroups() {
-    let allGroups=[]
-    try {
-      var myUrl = `${process.env.REACT_APP_AXIOS_BASEPATH}/group/memberof/${localStorage.getItem("uid")}`;
-      const response = await axios.get(myUrl);
-      allGroups = response.data[0].groups;
-      if (allGroups.length > 0) {
-        let tmp = allGroups.find(x => x.defaultGroup == true);
-        if (!tmp) {
-          tmp = allGroups[0];
-          tmp.defaultGroup = true;
-          localStorage.setItem("gid", tmp.gid.toString());
-          localStorage.setItem("groupName", tmp.groupName);
-          localStorage.setItem("tournament", tmp.tournament);
-          localStorage.setItem("admin", tmp.admin);
-        } 
-      }
-    } catch(e) {
-      console.log(e);
-    }
-    return allGroups;
-  }
   //console.log(`in Tab function  ${localStorage.getItem("menuValue")}`);
 
   const handleChange = (event) => {
@@ -168,8 +147,8 @@ export function CricDreamTabs() {
   };
 
   function handleGrpMenu(event) {
-    console.log(event.currentTarget);
     setGrpAnchorEl(event.currentTarget);
+    // console.log(event.currentTarget);
     var myUrl = `${process.env.REACT_APP_AXIOS_BASEPATH}/group/memberof/${localStorage.getItem("uid")}`;
     axios.get(myUrl).then((response) => {
       let allGroups = response.data[0].groups;
@@ -182,20 +161,27 @@ export function CricDreamTabs() {
           localStorage.setItem("groupName", tmp.groupName);
           localStorage.setItem("tournament", tmp.tournament);
           localStorage.setItem("admin", tmp.admin);
-          setUserGroup(allGroups);
-          console.log(myGroup);      
-          console.log('Everything is awesome.');
+          clearBackupData();
         }
       }
+      setUserGroup(allGroups);
+      // console.log('Everything is awesome.');
+      setArunGroup(true);
     }).catch((error) => {
-      console.warn('Not good man :(');
+      console.log('Not good man :(');
       console.log(error);
       setUserGroup([]);
+      setArunGroup(true);
     })
   };
 
   function handleGroupSelect(index) {
-    console.log(`group no ${index} selected`);
+    setArunGroup(false);
+    let gRec = userGroup[index];
+    localStorage.setItem("gid", gRec.gid);
+    localStorage.setItem("groupName", gRec.groupName);
+    localStorage.setItem("tournament", gRec.tournament);
+    localStorage.setItem("admin", gRec.admin);
   }
   
   const handleClose = () => {
@@ -204,6 +190,7 @@ export function CricDreamTabs() {
 
   const handleGrpClose = () => {
     setGrpAnchorEl(null);
+    setArunGroup(false);
   };
 
   function setMenuValue(num) {
@@ -317,45 +304,19 @@ export function CricDreamTabs() {
       return(<BlankArea/>)
   }
 
-  function ShowGroupMenu() {
+  function DisplayGroupMenu() {
+    // console.log("Group length", userGroup.length);
     return (
-      <div>
-      <IconButton
-        aria-label="account of current group"
-        aria-controls="group-appbar"
-        aria-haspopup="true"
-        onClick={handleGrpMenu}
-        color="inherit"
-      >
-        <GroupIcon className={classes.icon}/>
-      </IconButton>
-      {userGroup.map((item, index) => {
-        <MenuItem onClick={() => handleGroupSelect(index)}>x.groupName</MenuItem>
+      <div key="grouplist">
+      {userGroup.map( (item, index) => {
+        return (
+        <MenuItem key={item.groupName} onClick={() => handleGroupSelect(index)}>{item.groupName}</MenuItem>
+        )
       })}
-      <Menu
-        id="group-appbar"
-        anchorEl={grpAnchorEl}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        keepMounted
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        open={grpOpen}
-        onClose={handleGrpClose}
-      >
-        <MenuItem onClick={handleGroup}>Group</MenuItem>
-        <MenuItem onClick={handleGroupDetails}>Group Details</MenuItem>
-        <MenuItem onClick={handleGroupJoin}>Join Group</MenuItem>
-        <MenuItem onClick={handleGroupNew}>New Group</MenuItem>
-      </Menu>
-    </div>
-)
+      </div>
+    );
   }
-
+    
   let mylogo = `${process.env.PUBLIC_URL}/APLLOGO1.ICO`;
   return (
     <div className={classes.root}>
@@ -394,6 +355,11 @@ export function CricDreamTabs() {
                 open={open}
                 onClose={handleClose}
               >
+                {/* <MenuItem onClick={handleGroup}>Group</MenuItem> */}
+                <MenuItem onClick={handleGroupDetails}>Group Details</MenuItem>
+                <MenuItem onClick={handleGroupJoin}>Join Group</MenuItem>
+                <MenuItem onClick={handleGroupNew}>New Group</MenuItem>
+                <Divider />
                 <MenuItem onClick={handleMatch}>Match</MenuItem>
                 <MenuItem onClick={handleCaptain}>Captain</MenuItem>
                 <MenuItem onClick={handleAuction}>Auction</MenuItem>
@@ -450,13 +416,10 @@ export function CricDreamTabs() {
               vertical: 'top',
               horizontal: 'right',
             }}
-            open={grpOpen}
+            open={arunGroup}
             onClose={handleGrpClose}
           >
-            <MenuItem onClick={handleGroup}>Group</MenuItem>
-            <MenuItem onClick={handleGroupDetails}>Group Details</MenuItem>
-            <MenuItem onClick={handleGroupJoin}>Join Group</MenuItem>
-            <MenuItem onClick={handleGroupNew}>New Group</MenuItem>
+            <DisplayGroupMenu />
           </Menu>
         {/* </div> */}
        </Toolbar>

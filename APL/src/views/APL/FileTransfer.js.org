@@ -1,0 +1,201 @@
+import React, { useState , useEffect, useContext} from 'react';
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+// import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
+import red from '@material-ui/core/colors/red';
+import { useHistory } from "react-router-dom";
+// import {ValidComp, BlankArea, CricDreamLogo} from "CustomComponents/CustomComponents.js"
+// import {encrypt} from "views/functions.js"
+// import { SettingsCellOutlined } from '@material-ui/icons';
+// var fileSystem = require("file-system")
+// var fs = require('fs');
+// import listReactFiles from 'list-react-files'
+import axios from "axios";
+import Player from "views/SuperUser/Player"
+
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  error:  {
+      // right: 0,
+      fontSize: '12px',
+      color: red[700],
+      // position: 'absolute',
+      alignItems: 'center',
+      marginTop: '0px',
+  },
+  textData: {
+    fontSize: '14px',
+    margin: theme.spacing(0),
+  },
+}));
+
+async function getFIleList() {
+  return myList;
+
+}
+export default function FileTransfer() {
+  const classes = useStyles();
+  // const history = useHistory();
+  const [userRequest, setUserRequest] = useState("");
+  // const [feedbackCode, setFeedbackCode] = useState("");
+  const [registerStatus, setRegisterStatus] = useState(0);
+  const [fileList, setFileList] = useState([]);
+  const [state, setState] = useState({
+    // Initially, no file is selected
+    selectedFile: null
+  });
+
+  
+  useEffect(() => {
+    const fetchTeam = async () => {
+      let myList = [];
+      try {
+        var response = await axios.get(`${process.env.REACT_APP_AXIOS_BASEPATH}/apl/getfilenames`);
+        myList = response.data;
+      } catch (e) {
+        console.log(e);
+      }
+      setFileList(myList);
+    }
+    fetchTeam();
+}, []);
+
+    
+  function ShowResisterStatus() {
+    let myMsg;
+    switch (registerStatus) {
+      case 0:
+        myMsg = ``;
+        break;
+      case 200:
+        myMsg = `Reference code ${feedbackCode}`;
+        break;
+      case 1001:
+        myMsg = `Error sending feedback`;
+        break;
+      default:
+        myMsg = "Unknown Error";
+        break;
+  }
+  return(
+    <div>
+      <Typography className={(registerStatus === 200) ? classes.root : classes.error}>{myMsg}</Typography>
+    </div>
+  )}
+
+  
+  function Upload() {
+    return (
+      <div>
+        <Typography>Upload in development</Typography>
+      </div>
+    )
+  }
+
+  function handleDownload() {
+    console.log("Download");
+    setUserRequest("DOWNLOAD");
+  }
+  
+
+  function handlePlayer() {
+    console.log("Player");
+    setUserRequest("PLAYER");
+  }
+
+  function handleUpload() {
+    console.log("UPLOAD");
+    setUserRequest("UPLOAD");
+  }
+
+  function DownLoad() {
+    console.log(fileList);  
+    return (
+      <div>
+        {fileList.map(x => <Typography>File: {x}</Typography>)}
+        <Typography>Download in development</Typography>
+      </div>
+    )
+  }
+
+  function ShowButtons() {
+    return (
+      <div>
+        <Button
+          // type="submit"
+          size="small"
+          variant="contained"
+          color="primary"
+          onClick={handleUpload}
+          className={classes.submit}
+        >
+          Upload
+        </Button>
+        <Button
+          //type="submit"
+          size="small"
+          variant="contained"
+          color="primary"
+          onClick={handleDownload}
+          className={classes.submit}
+        >
+          DownLoad
+        </Button>
+        <Button
+          //type="submit"
+          size="small"
+          variant="contained"
+          color="primary"
+          onClick={handlePlayer}
+          className={classes.submit}
+        >
+          Player
+        </Button>
+      </div>
+    )
+  }
+
+  function DisplayOptions() {
+    if (userRequest === "UPLOAD") 
+      return <Upload />
+    else if (userRequest === "DOWNLOAD") 
+      return <DownLoad />
+    else if (userRequest === "PLAYER") 
+      return <Player />
+    else
+      return <div></div>
+  }
+
+  return (
+    <Container component="main" maxWidth="xs">
+      <CssBaseline />
+      <div className={classes.paper}>
+        {/* <Typography component="h1" variant="h5">File Upload and Download</Typography> */}
+        {/* <br/> */}
+        <ShowButtons/>
+        {/* <br/> */}
+        <DisplayOptions/>
+        <ShowResisterStatus/>
+      </div>
+    </Container> 
+  );
+}
