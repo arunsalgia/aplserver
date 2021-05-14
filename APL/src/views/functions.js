@@ -1,17 +1,6 @@
 import axios from "axios";
 var crypto = require("crypto");
 
-export function cdRefresh() {
-  window.location.reload();
-}
-
-export function cdCurrent() {
-  return String.fromCharCode(169);
-}
-
-export function cdDefault() {
-  return String.fromCharCode(9745);
-}
 
 export function validateSpecialCharacters(sss) {
     var sts = false;
@@ -61,15 +50,6 @@ export function validateEmail(sss) {
 }
 
 
-export function hasGroup() {
-  //console.log(`current gis is ${localStorage.getItem("gid")}`)
-  var sts = false;
-    if (localStorage.getItem("gid") !== null) 
-    if (localStorage.getItem("gid") !== "") 
-    if (localStorage.getItem("gid") !== "0")
-      sts = true;
-  return sts;
-}
 
 export function encrypt(text) {
   let hash="";
@@ -118,136 +98,7 @@ const notToConvert = ['XI', 'ARUN']
  * @param {string} t The date
  */
 
-export function cricTeamName(t) {
-  var tmp = t.split(' ');
-  for(i=0; i < tmp.length; ++i)  {
-    var x = tmp[i].trim().toUpperCase();
-    if (notToConvert.includes(x))
-      tmp[i] = x;
-    else
-      tmp[i] = x.substr(0, 1) + x.substr(1, x.length - 1).toLowerCase();
-  }
-  return tmp.join(' ');
-}
 
-var prizeDetails = [];
-
-async function getPrizeDetails() {
-  // console.log("Checking length");
-  try {
-    // console.log("reading proze details from database")
-    let response = await axios.get(`${process.env.REACT_APP_AXIOS_BASEPATH}/prize/data`);
-    prizeDetails = response.data;
-  } catch(err)  {
-    console.log("---------prize detail error");
-    console.log(err);
-  }
-} 
-
-async function getSinglePrizeDetails(count) {
-  // console.log("Checking length");
-  let myPrize;
-  try {
-    // console.log("reading proze details from database")
-    let response = await axios.get(`${process.env.REACT_APP_AXIOS_BASEPATH}/prize/prizecount/${count}`);
-    myPrize = response.data;
-  } catch(err)  {
-    console.log("---------prize detail error");
-    console.log(err);
-  }
-  return myPrize;
-} 
-
-async function getPrizePortion() {
-  let resp = await axios.get(`${process.env.REACT_APP_AXIOS_BASEPATH}/prize/prizeportion`);
-  let prizePortion = resp.data.prizeportion;
-  // console.log("prize portion", prizePortion);
-  return prizePortion;
-
-}
-
-export async function getPrizeTable(prizeCount, prizeAmount) {
-  
-  let prizePortion = await getPrizePortion();
-  let myPrize = await getSinglePrizeDetails(prizeCount);  //prizeDetails.find(x => x.prizeCount == prizeCount);
-  // we will keep 5% of amount
-  // rest (i.e. 95%) will be distributed among prize winners
-  let totPrize = Math.floor(prizeAmount*prizePortion);
-  let allotPrize = 0;
-  let prizeTable=[]
-  let i = 0;
-  for(i=1; i<prizeCount; ++i) {
-    let thisPrize = Math.floor(totPrize*myPrize["prize"+i.toString()]/100);
-    prizeTable.push({rank: i, prize: thisPrize})
-    allotPrize += thisPrize;
-  }
-  prizeTable.push({rank: prizeCount, prize: totPrize-allotPrize});
-  return prizeTable;
-}
-
-async function getSinglePrize(prizeCount) {
-  // console.log("Checking length");
-  let myPrize;
-  if (prizeDetails.length > 0) return;
-  try {
-    // console.log("reading proze details from database")
-    let response = await axios.get(`${process.env.REACT_APP_AXIOS_BASEPATH}/prize/prizecount/${prizeCount}`);
-    myPrize = response.data;
-  } catch(err)  {
-    console.log("---------prize detail error");
-    console.log(err);
-  }
-  return myPrize;
-} 
-
-export async function getSinglePrizeTable(prizeCount, prizeAmount) {
-  let prizePortion = await getPrizePortion();
-
-  let myPrize = await getSinglePrize(prizeCount);
-
-  let totPrize = Math.floor(prizeAmount*prizePortion)
-  // console.log("Total prize", totPrize);
-  let allotPrize = 0;
-  let prizeTable=[]
-  let i = 0;
-  for(i=1; i<prizeCount; ++i) {
-    let thisPrize = Math.floor(totPrize*myPrize["prize"+i.toString()]/100);
-    prizeTable.push({rank: i, prize: thisPrize})
-    allotPrize += thisPrize;
-  }
-  prizeTable.push({rank: prizeCount, prize: totPrize-allotPrize});
-  return prizeTable;
-}
-
-export async function getAllPrizeTable(prizeAmount) {
-  let allTable = [];
-  for(let i=1; i<=5; ++i) {
-    let tmp = await getSinglePrizeTable(i, prizeAmount);
-    allTable.push(tmp);
-  }
-  return (allTable);
-}
-
-
-export async function getUserBalance() {
-  let myBalance = 0;
-  try {
-    let response = await axios.get(`${process.env.REACT_APP_AXIOS_BASEPATH}/wallet/balance/${localStorage.getItem("uid")}`);
-    myBalance = (await response).data.balance;
-  } catch(err) {
-    myBalance = 0;
-  }
-  return myBalance;
-}
-
-export function specialSetPos() {
-  //console.log(`in SSP: ${localStorage.getItem("joinGroupCode")}`)
-  let retval = parseInt(process.env.REACT_APP_DASHBOARD);  //parseInt(process.env.REACT_APP_GROUP);
-  if (localStorage.getItem("joinGroupCode").length > 0)
-    retval = parseInt(process.env.REACT_APP_JOINGROUP);
-  //console.log(`in SSP: ${retval}`)
-  return retval;
-}
 
 export function getImageName(teamName) {
   let imageName = `${teamName}.JPG`;
@@ -255,49 +106,47 @@ export function getImageName(teamName) {
   return imageName;
 }
 
-export function currentAPLVersion() {
-  return(parseFloat(process.env.REACT_APP_VERSION));
-}
 
-export async function latestAPLVersion()  {
-  let version = 0.1;
-  try {
-    let response = await axios.get(`${process.env.REACT_APP_AXIOS_BASEPATH}/apl/latestversion`);
-    // console.log(response);
-    // let tmp = response.data;
-    version = parseFloat(response.data);
-  } catch(err) {
-    version = 0.1;
+export function checkText(txt) {
+  for(let i=0; i<txt.length; ++i) {
+    let asciiValue = txt.charCodeAt(i);
+    if (asciiValue === 10) 
+      console.log(`----CR at index ${i}`);
+    else if (asciiValue === 13) 
+      console.log(`----LF at index ${i}`);
+    else if (asciiValue === 32) 
+      console.log(`----SP at index ${i}`);
+    else
+      console.log(`char ${txt[i]} at ${i}`);
   }
-  return version;
 }
 
-export async function upGradeRequired() {
-  let upGrade = false;
-  if (process.env.REACT_APP_DEVICE === "MOBILE") {
-    let mycurrent = currentAPLVersion();
-    let mylatest = await latestAPLVersion();
-    // console.log(`Current ${mycurrent} and Latest: ${mylatest}`);
-    if (mylatest > mycurrent) upGrade = true;
-  }
-  // console.log(`Latest upgrade: ${upGrade}`);
-  return (upGrade);
+const CR = String.fromCharCode(13);
+const LF = String.fromCharCode(10);
+const SP = String.fromCharCode(32);
+
+const IntCR = String.fromCharCode(128+13);
+const IntLF = String.fromCharCode(128+10);
+const IntSP = String.fromCharCode(128+32);
+
+export function textToInternal(txt) {
+  let txt1 = txt;
+  let x = txt1.split(CR);
+  txt1 = x.join(IntCR);
+  x = txt1.split(LF);
+  txt1 = x.join(IntLF);
+  x = txt1.split(SP);
+  txt1 = x.join(IntSP);
+  return txt1;
 }
 
-export function clearBackupData() {
-  /* Clear dash board items */
-  localStorage.removeItem("saveRank");
-  localStorage.removeItem("saveScore");
-  localStorage.removeItem("saveMaxRun");
-  localStorage.removeItem("saveMaxWicket");
-  localStorage.removeItem("statData");
-  localStorage.removeItem("saveRankArray");
-  /* Clear Stat items */
-  localStorage.removeItem("statData");
-  /* clear team */
-  localStorage.removeItem("team");
-  /* clear captain */
-  localStorage.removeItem("captain");
-  localStorage.removeItem("viceCaptain");
-  localStorage.removeItem("captainList");
+export function internalToText(txt) {
+  let txt1 = txt;
+  let x = txt1.split(IntCR);
+  txt1 = x.join(CR);
+  x = txt1.split(IntLF);
+  txt1 = x.join(LF);
+  x = txt1.split(IntSP);
+  txt1 = x.join(SP);
+  return txt1;
 }

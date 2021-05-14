@@ -8,13 +8,16 @@ import Button from '@material-ui/core/Button';
 import "assets/css/material-dashboard-react.css?v=1.9.0";
 
 // import { DesktopWindows } from "@material-ui/icons";
-import Player from "views/SuperUser/Player"
-import FileDownload from "views/APL/FileDownload"
-import FileUpload from "views/APL/FileUpload";
-import BinaryUpload from "views/APL/BinaryUpload";
-import BinaryDownload from "views/APL/BinaryDownload";
-import PlayerPicture from "views/SuperUser/PlayerPic"
-import TeamPicture from "views/SuperUser/TeamPic"
+
+import FileDownload from "views/Image/FileDownload";
+import FileUpload from "views/Image/FileUpload";
+
+import BinaryUpload from "views/Binary/BinaryUpload";
+import BinaryDownload from "views/Binary/BinaryDownload";
+import ProductText from "views/Binary/BinaryText";
+
+import PlayerPicture from "views/Picture/PlayerPic";
+import TeamPicture from "views/Picture/TeamPic";
 
 const hist = createBrowserHistory();
 
@@ -42,6 +45,7 @@ function AppRouter() {
     console.log(upDown);
     return (
       <div align="center">
+        <div>
         <Button
           // type="submit"
           size="small"
@@ -62,6 +66,8 @@ function AppRouter() {
         >
           DownLoad Binary
         </Button>
+        </div>
+        <div>
         <Button
           // type="submit"
           size="small"
@@ -82,6 +88,19 @@ function AppRouter() {
         >
           DownLoad Image
         </Button>
+        </div>
+        <div>
+        <Button
+          // type="submit"
+          size="small"
+          variant="contained"
+          color="primary"
+          disabled={upDown === "BINARYTEXT"}
+          onClick={() => {setupDown("BINARYTEXT")}}
+        >
+          Product Text
+        </Button>
+        </div>
       </div>
     )
   }
@@ -117,6 +136,7 @@ function AppRouter() {
       case "UPLOADIMAGE" : return <FileUpload />
       case "DOWNLOADBINARY": return <BinaryDownload />
       case "DOWNLOADIMAGE" : return <FileDownload />
+      case "BINARYTEXT" : return <ProductText />
       default: return null;
     }
   }
