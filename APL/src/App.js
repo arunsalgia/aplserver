@@ -153,10 +153,11 @@ function AppRouter() {
   return (
     <BrowserRouter history={hist}> 
       <UserContext.Provider value={value}>
-        <Route path="/uploadimage" component={FileUpload} />
-        <Route path="/downloadimage" component={FileDownload} />
-        <Route path="/uploadbinary" component={BinaryUpload} />
-        <Route path="/downloadbinary" component={BinaryDownload} />
+        <Route path="/image/upload" component={FileUpload} />
+        <Route path="/image/download" component={FileDownload} />
+        <Route path="/binary/upload" component={BinaryUpload} />
+        <Route path="/binary/download" component={BinaryDownload} />
+        <Route path="/binary/text" component={ProductText} />
         <Route path="/playerpic/:playerPid" component={PlayerPicture} />
         <Route path="/teampic/:teamName" component={TeamPicture} />
         <Route path="/home" component={ShowHome} />
