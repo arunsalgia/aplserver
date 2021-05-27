@@ -72,7 +72,7 @@ app.use(express.json());
 //}
 
 app.get('*', (request, response) => {
-	response.sendFile(path.join(__dirname, 'APL/build', 'index.html'));
+	response.sendFile(path.resolve(__dirname, 'APL', 'build', 'index.html'));
 });
 
 app.use((req, res, next) => {
