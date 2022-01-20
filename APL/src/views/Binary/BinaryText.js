@@ -13,6 +13,8 @@ import LinearProgressWithLabel from '@material-ui/core/LinearProgress';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CircularProgressWithLabel from '@material-ui/core/LinearProgress';
 
+import loadshUniqBy from 'lodash/uniqBy';
+
 // import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import {red, blue} from '@material-ui/core/colors';
 import { useHistory } from "react-router-dom";
@@ -107,19 +109,19 @@ export default function ProductText() {
         // console.log(resp.data);
         setMasterData(resp.data);
         let myProducts = resp.data.map(x => x.name);
-        // console.log(myProducts);
+        myProducts = loadshUniqBy(myProducts);
         setProducts(myProducts);
+
         if (myProducts.length > 0) {
           setCurrProduct(myProducts[0]);
-          let tmp = resp.data.find(x => x.name === myProducts[0]);
-          // console.log(tmp);
-          setVersions(tmp.version);
-          setCurrVersion(tmp.version[0].version);
-          console.log(tmp.version[0]);
-          setCurrType(tmp.version[0].type);
-          setCurrText(internalToText(tmp.version[0].text));
+          let tmp = resp.data.filter(x => x.name === myProducts[0]);
+          setVersions(tmp);
+          setCurrVersion(tmp[0].version);
+          console.log(tmp[0]);
+          setCurrType(tmp[0].type);
+          setCurrText(internalToText(tmp[0].text));
           // console.log("0. CUrr type", tmp.version[0].type )
-          setCurrRecord(tmp.version[0]);
+          setCurrRecord(tmp[0]);
           // console.log(myProducts);
           // console.log(tmp.version);
         }
@@ -159,22 +161,20 @@ export default function ProductText() {
 
   function handleProductSelect(newProduct) {
     setCurrProduct(newProduct);
-    let tmp = masterData.find(x => x.name === newProduct);
-    setVersions(tmp.version);
-    setCurrVersion(tmp.version[0].version);
-    setCurrRecord(tmp.version[0]);
-    setCurrType(tmp.version[0].type);
-    setCurrText(internalToText(tmp.version[0].text));
+    let tmp = masterData.filter(x => x.name === newProduct);
+    setVersions(tmp);
+    setCurrVersion(tmp[0].version);
+    setCurrRecord(tmp[0]);
+    setCurrType(tmp[0].type);
+    setCurrText(internalToText(tmp[0].text));
     setRegisterStatus(0);
   }
 
   
   function handleVersionSelect(newVersion) {
     setCurrVersion(newVersion);
-    let tmp = masterData.find(x => x.name === currProduct);
-    tmp = tmp.version;
-    tmp = tmp.find(x => x.version === newVersion)
-
+    let tmp = masterData.find(x => x.name === currProduct && x.version === newVersion);
+    console.log(tmp);
     setCurrType(tmp.type);
     setCurrText(internalToText(tmp.text));
     setCurrRecord(tmp);

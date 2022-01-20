@@ -61,27 +61,29 @@ router.get('/resetproject', async function (req, res, next) {
 router.get('/confirmlatest/:pname/:ptype/:pversion', async function (req, res, next) {
   setHeader(res);
   var {pname, ptype, pversion} = req.params;
-  let isLatest = false;
-
-  let returnObject;
 
   let myProduct = await Product.find({
     name: pname.toUpperCase(),
     type: ptype.toUpperCase(),
     // version: pversion
-  }).limit(1).sort({ "versionNumber": -1 })
+  }, {name: 1, type: 1, version: 1, text: 1, versionNumber: 1}).limit(1).sort({ "versionNumber": -1 })
   //console.log(myProduct);
 
   if (myProduct.length > 0) {
-    returnObject = myProduct[0];
     let clientversion = getVersionNumber(pversion);
     //console.log(clientversion);
 
-    if (myProduct[0].versionNumber <= clientversion)
-      isLatest = true;
+    if (myProduct[0].versionNumber <  clientversion) {
+      return senderr(res, 501, "Not found");
+    }
+
+    let isLatest = (myProduct[0].versionNumber === clientversion)
+    sendok(res, {status: isLatest, latest: myProduct[0]});
+
+  } else {
+    senderr(res, 501, "Not found");
   } 
 
-  sendok(res, {status: isLatest, latest: returnObject});
 }); 
 
 
@@ -105,17 +107,9 @@ router.get('/getimagenames', async function (req, res, next) {
 router.get('/getbinarynames', async function (req, res, next) {
   setHeader(res);
 
-  let myData = await Product.find({});
-  let allProducts = [];
-  let myProds = _.map(myData, 'name');
-  myProds = _.uniqBy(myProds);
-  myProds = _.sortBy(myProds);
-
-  for(let p = 0; p<myProds.length; ++p) {
-    let myVer = _.filter(myData, x => x.name === myProds[p]);
-    myVer = _.sortBy(myVer, 'versionNumber').reverse();
-    allProducts.push({name: myProds[p], version: myVer });
-  }
+  let allProducts = await Product.find({}, 
+    {_id: 0, name: 1, type: 1, version: 1, versionNumber: 1, text: 1})
+    .sort({name: 1, versionNumber: -1});
   sendok(res, allProducts);
 }); 
 

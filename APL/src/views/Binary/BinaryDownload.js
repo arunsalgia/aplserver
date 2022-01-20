@@ -13,6 +13,8 @@ import LinearProgressWithLabel from '@material-ui/core/LinearProgress';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import CircularProgressWithLabel from '@material-ui/core/LinearProgress';
 
+import loadshUniqBy from 'lodash/uniqBy';
+
 // import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import {red, blue} from '@material-ui/core/colors';
 import { useHistory } from "react-router-dom";
@@ -106,20 +108,23 @@ export default function FileDownload() {
       try {
         // console.log("in use");
         let resp = await axios.get(`${process.env.REACT_APP_AXIOS_BASEPATH}/apl/getbinarynames`);
-        // console.log(resp.data);
         setMasterData(resp.data);
+
+        // get uniq product names
         let myProducts = resp.data.map(x => x.name);
-        // console.log(myProducts);
+        myProducts = loadshUniqBy(myProducts);
+        console.log(myProducts);
+
         setProducts(myProducts);
         if (myProducts.length > 0) {
+
           setCurrProduct(myProducts[0]);
-          let tmp = resp.data.find(x => x.name === myProducts[0]);
-          // console.log(tmp);
-          setVersions(tmp.version);
-          setCurrVersion(tmp.version[0].version);
-          setCurrRecord(tmp.version[0]);
-          console.log(myProducts);
-          console.log(tmp.version);
+          let tmp = resp.data.filter(x => x.name === myProducts[0]);
+          setVersions(tmp);
+          setCurrVersion(tmp[0].version);
+          setCurrRecord(tmp[0]);
+          //console.log(myProducts);
+          //console.log(tmp.version);
         }
       } catch (e) {
         console.log(e);
@@ -351,19 +356,17 @@ function onFileDownload() {
 
   function handleProductSelect(newProduct) {
     setCurrProduct(newProduct);
-    let tmp = masterData.find(x => x.name === newProduct);
-    setVersions(tmp.version);
-    setCurrVersion(tmp.version[0].version);
-    setCurrRecord(tmp.version[0]);
+    let tmp = masterData.filter(x => x.name === newProduct);
+    setVersions(tmp);
+    setCurrVersion(tmp[0].version);
+    setCurrRecord(tmp[0]);
     setRegisterStatus(0);
   }
 
   
   function handleVersionSelect(newVersion) {
     setCurrVersion(newVersion);
-    let tmp = masterData.find(x => x.name === currProduct);
-    tmp = tmp.version;
-    tmp = tmp.find(x => x.version === newVersion)
+    let tmp = masterData.find(x => x.name === currProduct && x.version === newVersion);
     setCurrRecord(tmp);
     setRegisterStatus(0);
   }
