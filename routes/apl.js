@@ -336,7 +336,7 @@ router.get('/downloadlatestbinary/:pname/:ptype', async function (req, res) {
   
   pname = pname.toUpperCase();
   ptype = ptype.toUpperCase();
-  console.log(pname, ptype, pversion);
+  console.log(pname, ptype);
   
   let myProduct = await Product.find({
     name: pname.toUpperCase(),
@@ -346,14 +346,12 @@ router.get('/downloadlatestbinary/:pname/:ptype', async function (req, res) {
   
   if (myProduct.length === 0) return senderr(res, 501, "No product available");
 
-  let myFile = getFileName(pname, myProduct[0].versionNumber, ptype);
+  myFile = getRootDir() + ARCHIVEDIR + pname + "." + ptype;
   console.log(myFile);
 
-  if (fileExist(myFile)) {
-    res.contentType("application/x-msdownload");
-    res.status(200).sendFile(myFile);
-  } else
-    senderr(res, 502, "Image not found");  
+  fs.writeFileSync(myFile, myProduct[0].image.data);
+  res.contentType("application/x-msdownload");
+  res.status(200).sendFile(myFile);
 })
 
 router.get('/purgeproduct/:pname/:ptype', async function (req, res) {
