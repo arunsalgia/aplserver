@@ -124,6 +124,7 @@ ProductSchema = mongoose.Schema({
   text: String,           // to store what is new
   version: String,        // <major version>.<minor version>.<patch number>
   versionNumber: Number,  // <major version> * 10000 + <minor Version>*100 + <patch number>
+  image: { data: Buffer, contentType: String }
 })
 
 // models

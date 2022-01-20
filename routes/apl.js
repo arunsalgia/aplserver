@@ -189,7 +189,7 @@ router.get('/downloadimage/:fileType/:fileName', async function (req, res) {
 })
 
 
-router.post('/uploadbinary/:pname/:ptype/:pversion/:fileName', async function (req, res) {
+router.post('/orguploadbinary/:pname/:ptype/:pversion/:fileName', async function (req, res) {
   setHeader(res);
 
   var {pname, ptype, pversion, fileName} = req.params;
@@ -239,7 +239,9 @@ router.post('/uploadbinary/:pname/:ptype/:pversion/:fileName', async function (r
   return;
 })
 
-router.get('/downloadbinary/:pname/:ptype/:pversion', async function (req, res) {
+
+
+router.get('/orgdownloadbinary/:pname/:ptype/:pversion', async function (req, res) {
   setHeader(res);
   var {pname, ptype, pversion} = req.params;
   
@@ -263,6 +265,76 @@ router.get('/downloadbinary/:pname/:ptype/:pversion', async function (req, res) 
   } else
     senderr(res, 500, "Image not found");  
 })
+
+router.post('/uploadbinary/:pname/:ptype/:pversion/:fileName', async function (req, res) {
+  setHeader(res);
+  var {pname, ptype, pversion, fileName} = req.params;
+  pname = pname.toUpperCase();
+  ptype = ptype.toUpperCase();
+  fileName = fileName.toUpperCase();
+  
+  console.log(ptype);
+
+  if ((ptype !== "EXE") && (ptype !== "APK"))
+    return senderr(res, 501, "Invalid file type");
+
+  upload(req, res, async (err) => {
+    if (err) return res.sendStatus(500);
+
+    //let xxx = fileName.split(".");
+    let myObject = await Product.findOne({name: pname, type: ptype, version: pversion});
+    if (!myObject) {
+      myObject = new Product();
+      myObject.name = pname;
+      myObject.type = ptype;
+      myObject.version = pversion;
+      myObject.text = pversion;
+      myObject.versionNumber = getVersionNumber(pversion);
+    } 
+
+    var filePath = getRootDir() + ARCHIVEDIR + fileName;
+    console.log(filePath);
+    myObject.image = {
+      data: fs.readFileSync(filePath),
+      contentType: 'application/x-dosexec'
+    }
+    await myObject.save();
+    // now delete the file
+
+    deletefile(filePath);
+
+    return  sendok(res, 'File uploaded'); 
+  });
+    
+  return;
+})
+
+router.get('/downloadbinary/:pname/:ptype/:pversion', async function (req, res) {
+  setHeader(res);
+  var {pname, ptype, pversion} = req.params;
+  
+  pname = pname.toUpperCase();
+  ptype = ptype.toUpperCase();
+  console.log(pname, ptype, pversion);
+  
+  // console.log(fileName);
+  // let x = await Team.find({})
+  // console.log(x);
+
+  let myObject = await Product.findOne({name: pname, type: ptype, version: pversion});
+
+  if (myObject) {
+    // console.log(myObject);
+    // myFile = getRootDir() + "public/" + pname + "_" + myObject.versionNumber + "." + ptype;
+    myFile = getRootDir() + ARCHIVEDIR + pname + "." + ptype;
+    fs.writeFileSync(myFile, myObject.image.data);
+    res.contentType("application/x-msdownload");
+    res.status(200).sendFile(myFile);
+
+  } else
+    senderr(res, 500, "Image not found");  
+})
+
 
 router.get('/downloadlatestbinary/:pname/:ptype', async function (req, res) {
   setHeader(res);
