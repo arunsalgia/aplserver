@@ -4,6 +4,10 @@ import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import { createBrowserHistory } from "history";
 import { UserContext } from "./UserContext";
 import Button from '@material-ui/core/Button';
+import Grid from "@material-ui/core/Grid";
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+
 //import Admin from "layouts/Admin.js";
 import "assets/css/material-dashboard-react.css?v=1.9.0";
 
@@ -21,6 +25,9 @@ import TeamPicture from "views/Picture/TeamPic";
 
 const hist = createBrowserHistory();
 
+// styles
+import globalStyles from "assets/globalStyles";
+
 
 function initCdParams() {
   localStorage.setItem("joinGroupCode", "");
@@ -36,13 +43,15 @@ function initCdParams() {
 
 
 function AppRouter() {
+  const gClasses = globalStyles();
+
   const [user, setUser] = useState(null);
   const value = useMemo(() => ({ user, setUser }), [user, setUser]);
 
-  const [upDown, setupDown] = useState("DOWNLOADIMAGE");
+  const [currentSelection, setCurrentSelection] = useState("UploadBinary");
 
   function ShowButtons() {
-    console.log(upDown);
+    console.log(currentSelection);
     return (
       <div align="center">
         <div>
@@ -51,18 +60,18 @@ function AppRouter() {
           size="small"
           variant="contained"
           color="primary"
-          disabled={upDown === "UPLOADBINARY"}
-          onClick={() => {setupDown("UPLOADBINARY")}}
+          disabled={currentSelection === "UPLOADBINARY"}
+          onClick={() => {setCurrentSelection("UPLOADBINARY")}}
         >
-          Upload Binary
+          
         </Button>
         <Button
           //type="submit"
           size="small"
           variant="contained"
           color="primary"
-          disabled={upDown === "DOWNLOADBINARY"}
-          onClick={() => {setupDown("DOWNLOADBINARY")}}
+          disabled={currentSelection === "DOWNLOADBINARY"}
+          onClick={() => {setCurrentSelection("DOWNLOADBINARY")}}
         >
           DownLoad Binary
         </Button>
@@ -73,8 +82,8 @@ function AppRouter() {
           size="small"
           variant="contained"
           color="primary"
-          disabled={upDown === "UPLOADIMAGE"}
-          onClick={() => {setupDown("UPLOADIMAGE")}}
+          disabled={currentSelection === "UPLOADIMAGE"}
+          onClick={() => {setCurrentSelection("UPLOADIMAGE")}}
         >
           Upload Image
         </Button>
@@ -83,8 +92,8 @@ function AppRouter() {
           size="small"
           variant="contained"
           color="primary"
-          disabled={upDown === "DOWNLOADIMAGE"}
-          onClick={() => {setupDown("DOWNLOADIMAGE")}}
+          disabled={currentSelection === "DOWNLOADIMAGE"}
+          onClick={() => {setCurrentSelection("DOWNLOADIMAGE")}}
         >
           DownLoad Image
         </Button>
@@ -95,8 +104,8 @@ function AppRouter() {
           size="small"
           variant="contained"
           color="primary"
-          disabled={upDown === "BINARYTEXT"}
-          onClick={() => {setupDown("BINARYTEXT")}}
+          disabled={currentSelection === "BINARYTEXT"}
+          onClick={() => {setCurrentSelection("BINARYTEXT")}}
         >
           Product Text
         </Button>
@@ -105,6 +114,36 @@ function AppRouter() {
     )
   }
 
+  function DisplayFunctionItem(props) {
+  let itemName = props.item;
+  return (
+		<Grid key={"BUT"+itemName} item xs={4} sm={4} md={2} lg={2} >
+			<Typography onClick={() => setCurrentSelection(itemName)}>
+				<span 
+					className={(itemName === currentSelection) ? gClasses.functionSelected : gClasses.functionUnselected}>
+				{itemName}
+				</span>
+			</Typography>
+		</Grid>
+  )}
+
+	async function setSelection(item) {
+		currentSelection(item);
+	}
+	
+
+  function DisplayFunctionHeader() {
+    return (
+    <Box  className={gClasses.boxStyle} borderColor="black" borderRadius={7} border={1} >
+    <Grid className={gClasses.noPadding} key="AllPatients" container align="center">
+      <DisplayFunctionItem item="UploadBinary" />
+      <DisplayFunctionItem item="DownloadBinary" />
+      <DisplayFunctionItem item="UploadImage" />
+      <DisplayFunctionItem item="DownloadImage" />
+      <DisplayFunctionItem item="BinaryText" />
+    </Grid>	
+    </Box>
+  )}
 
   function DispayTabs() {
     // console.log(localStorage.getItem("uid"));
@@ -131,12 +170,12 @@ function AppRouter() {
   let mypath = window.location.pathname.split("/");
 
   function DisplayOptions() {
-    switch (upDown) {
-      case "UPLOADBINARY": return <BinaryUpload />
-      case "UPLOADIMAGE" : return <FileUpload />
-      case "DOWNLOADBINARY": return <BinaryDownload />
-      case "DOWNLOADIMAGE" : return <FileDownload />
-      case "BINARYTEXT" : return <ProductText />
+    switch (currentSelection) {
+      case "UploadBinary": return <BinaryUpload />
+      case "UploadImage" : return <FileUpload />
+      case "DownloadBinary": return <BinaryDownload />
+      case "DownloadImage" : return <FileDownload />
+      case "BinaryText" : return <ProductText />
       default: return null;
     }
   }
@@ -144,7 +183,8 @@ function AppRouter() {
   function ShowHome() {
     return (
       <div>
-        <ShowButtons />
+        {/*<ShowButtons />*/}
+        <DisplayFunctionHeader />
         <DisplayOptions />
       </div>
     )
@@ -166,14 +206,6 @@ function AppRouter() {
       </UserContext.Provider>
     </BrowserRouter>
   );
-
-// return (
-//       <Router history={hist}> 
-//       <UserContext.Provider value={value}>
-//       </UserContext.Provider>
-//       <DispayTabs />
-//       </Router>
-//   );
 
 }
 

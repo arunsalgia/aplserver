@@ -265,7 +265,7 @@ router.post('/uploadbinary/:pname/:ptype/:pversion/:fileName', async function (r
   var {pname, ptype, pversion, fileName} = req.params;
   pname = pname.toUpperCase();
   ptype = ptype.toUpperCase();
-  fileName = fileName.toUpperCase();
+  //fileName = fileName.toUpperCase();
   
   console.log(ptype);
 
