@@ -55,13 +55,21 @@ function getVersionNumber(verStr) {
   let myNumber = 0;
   let tmp = verStr.split(".");
   // console.log("Tmp length ", tmp.length);
-  if (tmp.length ===  3) {
+	
+  /*** if (tmp.length ===  3) {
     let num1 = nnn(tmp[0]);
     let num2 = nnn(tmp[1]);
     let num3 = nnn(tmp[2]);
     // console.log("Indi version ", num1, num2,  num3);
     myNumber = num1 * 10000 + num2 * 100 + num3;
-  }
+  }***/
+	let num1 = nnn(tmp[0]);
+	myNumber = num1;
+	num1 = (tmp.length > 1) ? nnn(tmp[1]) : 0;
+	myNumber = (myNumber * 100) + num1;
+	num1 = (tmp.length > 2) ? nnn(tmp[2]) : 0;
+	myNumber = (myNumber * 100) + num1;
+	
   return myNumber;
 }
 

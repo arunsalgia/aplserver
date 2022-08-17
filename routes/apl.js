@@ -61,17 +61,18 @@ router.get('/resetproject', async function (req, res, next) {
 router.get('/confirmlatest/:pname/:ptype/:pversion', async function (req, res, next) {
   setHeader(res);
   var {pname, ptype, pversion} = req.params;
-
+	console.log(pname, ptype, pversion);
+	
   let myProduct = await Product.find({
     name: pname.toUpperCase(),
     type: ptype.toUpperCase(),
     // version: pversion
   }, {name: 1, type: 1, version: 1, text: 1, versionNumber: 1}).limit(1).sort({ "versionNumber": -1 })
-  //console.log(myProduct);
+  console.log(myProduct);
 
   if (myProduct.length > 0) {
     let clientversion = getVersionNumber(pversion);
-    //console.log(clientversion);
+    console.log(clientversion);
 
     if (myProduct[0].versionNumber <  clientversion) {
       return senderr(res, 501, "Not found");
