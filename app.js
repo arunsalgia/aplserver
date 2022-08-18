@@ -24,6 +24,7 @@ methodOverride = require('method-override');
 mongoose.set('useNewUrlParser', true);
 mongoose.set('useFindAndModify', false);
 mongoose.set('useCreateIndex', true);
+mongoose.set('useUnifiedTopology', true);
 
 
 const { getRootDir, getFileName, fileExist, renameFile, 
@@ -152,7 +153,12 @@ CRICFETCHERR = 992;
 ERR_NODB = "No connection to APL master database";
 
 // make mogoose connection
-mongoose.connect(process.env.MONGOCONNECTION, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGOCONNECTION, {
+	useNewUrlParser: true,
+	useCreateIndex: true,
+	useUnifiedTopology: true,
+	useFindAndModify: false
+});
 
 
 // CONNECTION EVENTS
