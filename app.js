@@ -85,7 +85,7 @@ app.use((req, res, next) => {
     console.log(req.url);
     res.redirect('/binarylatest/apl');
     console.log("Path is ", req.url);
-    r
+	}
 });
 
 app.use('/', indexRouter);
