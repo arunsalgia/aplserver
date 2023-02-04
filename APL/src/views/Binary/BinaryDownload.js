@@ -168,8 +168,10 @@ function OrgonFileDownload() {
   setPercentage(0);
   setDownloadInProgress(true);
   if (debug) console.log("on file download start");
+	console.log("on file download start");
   setRegisterStatus(0);
   setShowProgress(true);
+	console.log(fileType, currSelect);
   try {
   axios({
 		method: 'get',
@@ -229,9 +231,11 @@ function onFileDownload() {
   setRegisterStatus(0);
   setShowProgress(true);
   try {
+	let tmp = encodeURIComponent(JSON.stringify({name: pname, type: ptype, version: pver}));
   axios({
 		method: 'get',
-		url: `${process.env.REACT_APP_AXIOS_BASEPATH}/apl/downloadbinary/${pname}/${ptype}/${pver}`,
+		//url: `${process.env.REACT_APP_AXIOS_BASEPATH}/apl/downloadbinary/${pname}/${ptype}/${pver}`,
+		url: `${process.env.REACT_APP_AXIOS_BASEPATH}/apl/downloadbinary1/${tmp}`,
 		responseType: 'arraybuffer',
 		onDownloadProgress: (progressEvent) => {
       let newPercent = Math.round((progressEvent.loaded * 100) / progressEvent.total);

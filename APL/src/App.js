@@ -18,7 +18,8 @@ import FileUpload from "views/Image/FileUpload";
 
 import BinaryUpload from "views/Binary/BinaryUpload";
 import BinaryDownload from "views/Binary/BinaryDownload";
-import ProductText from "views/Binary/BinaryText";
+import ProductText from  "views/Binary/BinaryText";
+import BinaryLatest from "views/Binary/BinaryLatest";
 
 import PlayerPicture from "views/Picture/PlayerPic";
 import TeamPicture from "views/Picture/TeamPic";
@@ -168,7 +169,8 @@ function AppRouter() {
   initCdParams();
   //console.log("GTP "+window.location.pathname.toLowerCase());
   let mypath = window.location.pathname.split("/");
-
+  console.log(mypath);
+	
   function DisplayOptions() {
     switch (currentSelection) {
       case "UploadBinary": return <BinaryUpload />
@@ -190,6 +192,7 @@ function AppRouter() {
     )
   }
 
+  console.log(hist);
   return (
     <BrowserRouter history={hist}> 
       <UserContext.Provider value={value}>
@@ -197,6 +200,7 @@ function AppRouter() {
         <Route path="/image/download" component={FileDownload} />
         <Route path="/binary/upload" component={BinaryUpload} />
         <Route path="/binary/download" component={BinaryDownload} />
+        <Route path="/binarylatest/:binData" component={BinaryLatest} />
         <Route path="/binary/text" component={ProductText} />
         <Route path="/playerpic/:playerPid" component={PlayerPicture} />
         <Route path="/teampic/:teamName" component={TeamPicture} />

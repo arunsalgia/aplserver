@@ -162,6 +162,7 @@ export default function BinaryUpload() {
 
   function FileData() {
     if (state.selectedFile) {         
+			console.log(state.selectedFile);
       return (
         <div>
           <Box>
@@ -170,7 +171,7 @@ export default function BinaryUpload() {
             <Typography>Type: {state.selectedFile.type}</Typography>
             <Typography>
               Last Modified:{" "}
-              {state.selectedFile.lastModifiedDate.toDateString()}
+              {state.selectedFile.lastModified}
             </Typography>
           </Box>
         </div>

@@ -38,8 +38,8 @@ app.use(bodyParser.urlencoded({extended: true}))
 app.use(methodOverride('_method'));
 
 PRODUCTION=true;  
-ARCHIVEDIR= (PRODUCTION) ? "public/" : "public/" ;       // binary will be stored here
-
+ARCHIVEDIR = (PRODUCTION) ? "public/" : "public/" ;      
+BINARYDIR  = (PRODUCTION) ? "public/binary/" : "public/binary/" ;       // binary will be stored here
 
 
 // if (PRODUCTION)

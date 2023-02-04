@@ -286,17 +286,20 @@ router.post('/uploadbinary/:pname/:ptype/:pversion/:fileName', async function (r
       myObject.text = pversion;
       myObject.versionNumber = getVersionNumber(pversion);
     } 
-
+		console.log(myObject);
+		
+		
     var filePath = getRootDir() + ARCHIVEDIR + fileName;
     console.log(filePath);
-    myObject.image = {
-      data: fs.readFileSync(filePath),
-      contentType: 'application/x-dosexec'
-    }
+    //myObject.image = {
+    //  data: fs.readFileSync(filePath),
+    //  contentType: 'application/x-dosexec'
+    //}
+		
     await myObject.save();
     // now delete the file
 
-    deletefile(filePath);
+    //deletefile(filePath);
 
     return  sendok(res, 'File uploaded'); 
   });
@@ -308,22 +311,54 @@ router.get('/downloadbinary/:pname/:ptype/:pversion', async function (req, res) 
   setHeader(res);
   var {pname, ptype, pversion} = req.params;
   
+	console.log("in start");
+	
+	var myData = {name: pname, type: ptype, version: pversion};
+	var myDataStr = JSON.stringify(encodeURIComponent(myData));
+	console.log(myDataStr);
+	
   pname = pname.toUpperCase();
   ptype = ptype.toUpperCase();
   console.log(pname, ptype, pversion);
-  
-  // console.log(fileName);
-  // let x = await Team.find({})
-  // console.log(x);
 
   let myObject = await Product.findOne({name: pname, type: ptype, version: pversion});
-
+	
   if (myObject) {
-    // console.log(myObject);
+    console.log(myObject);
     // myFile = getRootDir() + "public/" + pname + "_" + myObject.versionNumber + "." + ptype;
-    myFile = getRootDir() + ARCHIVEDIR + pname + "." + ptype;
-    fs.writeFileSync(myFile, myObject.image.data);
-    res.contentType("application/x-msdownload");
+    myFile = getRootDir() + BINARYDIR + pname + "_" + myObject.versionNumber +  "." + ptype;
+		console.log(myFile);
+    //fs.writeFileSync(myFile, myObject.image.data);
+    //res.contentType("application/x-msdownload");
+    res.status(200).sendFile(myFile);
+
+  } else
+    senderr(res, 500, "Image not found");  
+})
+
+
+router.get('/downloadbinary1/:binaryinfo', async function (req, res) {
+  setHeader(res);
+  var {binaryinfo} = req.params;
+  
+	var tmp = JSON.parse(binaryinfo);
+	console.log(tmp);
+	
+  var pname = tmp.name.toUpperCase();
+  var ptype = tmp.type.toUpperCase();
+	var pversion = tmp.version;
+	
+  console.log(pname, ptype, pversion);
+
+  let myObject = await Product.findOne({name: pname, type: ptype, version: pversion});
+	
+  if (myObject) {
+    console.log(myObject);
+    // myFile = getRootDir() + "public/" + pname + "_" + myObject.versionNumber + "." + ptype;
+    myFile = getRootDir() + BINARYDIR + pname + "_" + myObject.versionNumber +  "." + ptype;
+		console.log(myFile);
+    //fs.writeFileSync(myFile, myObject.image.data);
+    //res.contentType("application/x-msdownload");
     res.status(200).sendFile(myFile);
 
   } else
