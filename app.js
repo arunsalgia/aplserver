@@ -81,10 +81,10 @@ app.use((req, res, next) => {
     next();
   }
 */
-  if (req.url.includes("binarylatest") ){
+  if (req.url.includes("viraag") ){
     console.log("Path is ", req.url);
     console.log(req.url);
-    //res.redirect('https://aplserver.herokuapp.com/binarylatest/apl');
+    //res.redirect('https://aplserver.herokuapp.com/viraags/binarylatest/apl');
 		res.sendFile(path.resolve(__dirname, 'APL', 'build', 'index.html'));
 	}
 	else {

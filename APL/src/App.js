@@ -196,15 +196,15 @@ function AppRouter() {
   return (
     <BrowserRouter history={hist}> 
       <UserContext.Provider value={value}>
-        <Route path="/image/upload" component={FileUpload} />
-        <Route path="/image/download" component={FileDownload} />
-        <Route path="/binary/upload" component={BinaryUpload} />
-        <Route path="/binary/download" component={BinaryDownload} />
-        <Route path="/binarylatest/:binData" component={BinaryLatest} />
-        <Route path="/binary/text" component={ProductText} />
-        <Route path="/playerpic/:playerPid" component={PlayerPicture} />
-        <Route path="/teampic/:teamName" component={TeamPicture} />
-        <Route path="/home" component={ShowHome} />
+        <Route path="/viraag/image/upload" component={FileUpload} />
+        <Route path="/viraag/image/download" component={FileDownload} />
+        <Route path="/viraag/binary/upload" component={BinaryUpload} />
+        <Route path="/viraag/binary/download" component={BinaryDownload} />
+        <Route path="/viraag/binarylatest/:binData" component={BinaryLatest} />
+        <Route path="/viraag/binary/text" component={ProductText} />
+        <Route path="/viraag/playerpic/:playerPid" component={PlayerPicture} />
+        <Route path="/viraag/teampic/:teamName" component={TeamPicture} />
+        <Route path="/viraag/home" component={ShowHome} />
         <Route exact path="/" component={ShowHome} />
         {/* <Redirect exact from="/" to="/home" /> */}
       </UserContext.Provider>
