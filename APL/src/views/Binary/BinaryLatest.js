@@ -445,6 +445,7 @@ function downloadLatest() {
   }
 
 	console.log(currRecord);
+	if (!currRecord) return null;
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
