@@ -116,7 +116,8 @@ export default function BinaryLatest() {
 		console.log("in use effect");
     const fdl = async () => {
       try {
-        let resp = await axios.get(`${process.env.REACT_APP_AXIOS_BASEPATH}/apl/getbinarynames`);
+				let myUrl=`${process.env.REACT_APP_AXIOS_BASEPATH}/apl/getbinarynames`;
+        let resp = await axios.get(myUrl);
 				console.log(resp.data);
         setMasterData(resp.data);
 				setCurrRecord(resp.data[0]);

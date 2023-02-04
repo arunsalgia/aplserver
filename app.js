@@ -87,7 +87,11 @@ app.use((req, res, next) => {
     //res.redirect('https://aplserver.herokuapp.com/binarylatest/apl');
 		res.sendFile(path.resolve(__dirname, 'APL', 'build', 'index.html'));
 	}
+	else {
+    next();
+  }
 });
+
 
 app.use('/', indexRouter);
 app.use('/user', usersRouter);
