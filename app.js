@@ -72,6 +72,7 @@ app.use(express.json());
 
 
 app.use((req, res, next) => {
+	/*
   if (req.url.includes("admin")||req.url.includes("signIn")||req.url.includes("Logout")) {
     req.url = "/";
     res.redirect('/');
@@ -79,7 +80,12 @@ app.use((req, res, next) => {
   else {
     next();
   }
-
+*/
+  if (req.url.includes("viraag") ){
+    console.log(req.url);
+    res.redirect('/binarylatest/apl');
+    console.log("Path is ", req.url);
+    r
 });
 
 app.use('/', indexRouter);
